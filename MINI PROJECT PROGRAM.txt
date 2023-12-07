@@ -1,0 +1,348 @@
+#include<iostream>
+#include <fstream>
+#include <string>
+#include <ctime>
+using namespace std;
+
+class Node {
+public:
+    string roll_no;
+    string name;
+    string father_name;
+    string quali;
+    long long phone_no;
+    Node* next_add;
+};
+
+class LinkedList {
+public:
+    Node*head=nullptr;
+
+    
+// Function to insert a new student record
+    void Insert() 
+{
+        Node*new_node = new Node;
+        cout << "Enter Student ID: ";
+        cin >> new_node->roll_no;
+        cin.ignore(); // Consume the newline character
+
+        cout << "Enter Student Name: ";
+        getline(cin, new_node->name);
+
+        cout << "Enter Father's Name: ";
+        getline(cin, new_node->father_name);
+
+        cout << "Enter Student Qualification: ";
+        getline(cin, new_node->quali);
+
+        cout << "Enter Phone No: ";
+        cin >> new_node->phone_no;
+
+        new_node->next_add = nullptr;
+
+        if (head == nullptr) {
+            head = new_node;
+        } else {
+            Node* ptr = head;
+            while (ptr->next_add != nullptr) {
+                ptr = ptr->next_add;
+            }
+            ptr->next_add = new_node;
+        }
+
+        // Save the record to a file
+        ofstream file("Items.txt", ios::app);
+        if (file.is_open()) {
+            file << new_node->roll_no << "\n";
+            file << new_node->name << "\n";
+            file << new_node->father_name << "\n";
+            file << new_node->quali << "\n";
+            file << new_node->phone_no << "\n";
+            file.close();
+        } else {
+            cout << "Failed to open the file for writing." << endl;
+        }
+
+        cout << "New Node Inserted Successfully..." << endl;
+    }
+
+    // Function to automatically display the current date and time
+    void DisplayDateTime() {
+        time_t currentTime = time(nullptr);
+        tm* localTime = localtime(&currentTime);
+
+        char buffer[80];
+        strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", localTime);
+
+        cout << "Current Date and Time: " << buffer << endl;
+    }
+    
+    // Function to search for a student record by student name
+    void SearchByName() {
+        if (head == nullptr) {
+            cout << "Linked List is empty..." << endl;
+        } else {
+            string search_name;
+            cout << "Enter Student Name for Search:";
+            cin.ignore(); // Consume the newline character
+            getline(cin, search_name);
+
+            Node* ptr = head;
+            int found = 0;
+
+            while (ptr != nullptr) {
+                if (search_name == ptr->name) {
+                    cout << "Student ID: " << ptr->roll_no << endl;
+                    cout << "Student Name: " << ptr->name << endl;
+                    cout << "Father Name: " << ptr->father_name << endl;
+                    cout << "Student Qualification: " << ptr->quali << endl;
+                    cout << "Phone No: " << ptr->phone_no << endl;
+                    found++;
+                }
+                ptr = ptr->next_add;
+            }
+
+            if (found == 0) {
+                cout << "No student with the name: " << search_name << " found." << endl;
+            }
+        }
+    }
+
+    // Function to search for a student record by registration number
+    void SearchByRegNo() {
+        if (head == nullptr) {
+            cout << "Linked List is empty..." << endl;
+        } else {
+            string search_roll_no;
+            cout << "Enter Student Registration Number for Search: ";
+            cin.ignore(); // Consume the newline character
+            getline(cin, search_roll_no);
+
+            Node* ptr = head;
+            int found = 0;
+
+            while (ptr != nullptr) {
+                if (search_roll_no == ptr->roll_no) {
+                    cout << "Student ID: " << 
+                      ptr->roll_no << endl;
+                    
+                     cout << "Student Name: " << 
+                        ptr->name << endl;
+                    cout << "Father Name: " << 
+                       ptr->father_name << endl;
+                    cout << "Student Qualification: "
+                       << ptr->quali << endl;
+                    cout << "Phone No: " << 
+                        ptr->phone_no << endl;
+                    found++;
+                }
+                ptr = ptr->next_add;
+            }
+
+            if (found == 0) {
+                cout << "No student with the registration number: " << search_roll_no << " found." << endl;
+            }
+        }
+    }
+
+    // Function to count the number of records
+    void Count() {
+        int count = 0;
+        Node* ptr = head;
+        while (ptr != nullptr) {
+            count++;
+            ptr = ptr->next_add;
+        }
+        cout << "Total No. of Records: " << count << endl;
+    }
+
+    // Function to update a student record
+    void Update() {
+        string r;
+        cout << "Enter Student ID for Update: ";
+        cin >> r;
+        Node* ptr = head;
+        bool found = false;
+        while (ptr != nullptr) {
+            if (r == ptr->roll_no) {
+                cout << "Enter New Student ID: ";
+                cin >> ptr->roll_no;
+                cout << "Enter Student Name: ";
+                cin.ignore(); // Consume the newline character
+                getline(cin, ptr->name);
+                cout << "Enter Father's Name: ";
+                getline(cin, ptr->father_name);
+                cout << "Enter Student Qualification: ";
+                getline(cin, ptr->quali);
+                cout << "Enter Phone No: ";
+                cin >> ptr->phone_no;
+                cout << "Record Updated Successfully..." << endl;
+                found = true;
+                break;
+            }
+            ptr = ptr->next_add;
+        }
+
+        if (!found) {
+            cout << "Student ID: " << r << " not found." << endl;
+        }
+    }
+
+    // Function to delete a student record
+    void Delete() {
+        string r;
+        cout << "Enter Student ID for Deletion: ";
+        cin >> r;
+        Node* ptr = head;
+        Node* prev = nullptr;
+        bool found = false;
+
+        if (ptr != nullptr && r == ptr->roll_no) {
+            head = ptr->next_add;
+            delete ptr;
+            found = true;
+            cout << "Record Deleted Successfully..." << endl;
+        } else {
+            while (ptr != nullptr && r != ptr->roll_no) {
+                prev = ptr;
+                ptr = ptr->next_add;
+            }
+
+            if (ptr != nullptr) {
+                prev->next_add = ptr->next_add;
+                delete ptr;
+                found = true;
+                cout << "Record Deleted Successfully..." << endl;
+            }
+        }
+
+        if (!found) {
+            cout << "Student ID: " << r << " not found." << endl;
+        }
+    }
+
+    // Function to show all student records
+    void Show() {
+        if (head == nullptr) {
+            cout << "Linked List is empty..." << endl;
+        } else {
+            Node* ptr = head;
+            while (ptr != nullptr) {
+                cout << "Student ID: " << ptr->roll_no << endl;
+                cout << "Student Name: " << ptr->name << endl;
+                cout << "Father Name: " << 
+                 ptr->father_name << endl;
+                
+               cout << "Student Qualification: " << ptr->quali << endl;
+               
+ cout << "Phone No: " << ptr->phone_no << endl;
+                ptr = ptr->next_add;
+            }
+        }
+    }
+
+    // Function to load student records from a file
+    void ShowFile() {
+        ifstream file("Items.txt");
+        if (file.is_open()) {
+            while (!file.eof()) {
+                string roll_no, name, father_name, quali;
+                long long phone_no;
+                file >> roll_no;
+                file.ignore(); // Consume the newline character
+                getline(file, name);
+                getline(file, father_name);
+                getline(file, quali);
+                file >> phone_no;
+                file.ignore(); // Consume the newline character
+
+                Node* new_node = new Node;
+                new_node->roll_no = roll_no;
+                new_node->name = name;
+                new_node->father_name = father_name;
+                new_node->quali = quali;
+                new_node->phone_no = phone_no;
+                new_node->next_add = nullptr;
+
+                if (head == nullptr) {
+                    head = new_node;
+                } else {
+                    Node* ptr = head;
+                    while (ptr->next_add != nullptr) {
+                        ptr = ptr->next_add;
+                    }
+                    ptr->next_add = new_node;
+                }
+            }
+            file.close();
+        } else {
+            cout << "Failed to open the file for reading." << endl;
+        }
+    }
+};
+
+int main() {
+    LinkedList obj;
+
+    // Display the current date and time as soon as the program starts
+    obj.DisplayDateTime();
+
+    while (true) {
+        system("cls");
+        int choice;
+        cout << "Welcome to Student Management System Application" << endl;
+        cout << "1. Insert Record" << endl;
+        cout << "2. Search Record by Student Name" << endl;
+        cout << "3. Search Record by Registration Number" << endl;
+        cout << "4. Count Records" << endl;
+        cout << "5. Update Record" << endl;
+        cout << "6. Delete Record" << endl;
+        cout << "7. Show All Records" << endl;
+        cout << "8. Show Records From File" << endl;
+        cout << "9. Display Current Date and Time" << endl;
+        cout << "10. Exit" << endl;
+
+        cout << "Enter Your Choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                obj.Insert();
+                break;
+            case 2:
+                obj.SearchByName();
+                break;
+            case 3:
+                obj.SearchByRegNo();
+                break;
+            case 4:
+                obj.Count();
+                break;
+            case 5:
+                obj.Update();
+                break;
+            case 6:
+                obj.Delete();
+                break;
+            case 7:
+                obj.Show();
+                break;
+            case 8:
+                obj.ShowFile();
+                break;
+            case 9:
+                obj.DisplayDateTime();
+                break;
+            case 10:
+                exit(0);
+            default:
+                cout << "Invalid Choice" << endl;
+        }
+        cout << "Press any key to continue...";
+        cin.ignore();
+        cin.get();
+    }
+
+    return 0;
+}
